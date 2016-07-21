@@ -4,25 +4,29 @@
 # Respond to the blank command or to the help command
 #
 
+
+
 $app->post('/[{name}]', function ($request, $response, $args) {
 
 	$inputs = validate_and_fetch_args($request);
+
+	#
+	# Validate input arguments
+	#
+
+	if(!$inputs){
+		$response = $response->withStatus(400, "Invalid token passed");
+		$response->write("Invalid token passed!");
+		return $response;
+
+	}
 
 	$text = $inputs['text'];
 
 	switch($text)
 	{
 		case 'help';
-			$response_text = "Hello :wave::skin-tone-6: !\n Welcome to Tic Tac Toe. Here are the rules of the game\n You can challenge another user to a game. Here are the commands to do so\n
-				`/tictactoe help` : Shows this screen\n
-				`/tictactoe challenge @username` : Challenges the given user to a game\n
-				`tictactoe forfeit` : Forfeits the game to another user.
-				`tictactoe move [0-9]` : move to the next grid, numbered 1 - 9 as follows\n
-				\n
-				| :one:  | :two: | :three:|\n
-				| :four: | :five: | :six: |\n
-				| :seven: | :eight: | :nine: |\n
-				\n";
+			$response_text = $this->TicTacToeService->build_help_text($request);;
 
 
 			break;
@@ -44,6 +48,11 @@ $app->post('/[{name}]', function ($request, $response, $args) {
 	return $response_text;
 });
 
+function validate_token($token){
+	if(!$token) return false;
+	return $token == "fr272jM9bDw09VMO3s49c3JL";
+}
+
 #
 # Validate arguments
 #
@@ -52,7 +61,9 @@ function validate_and_fetch_args($request){
 	$parsedBody = $request->getParsedBody();
 
 	# validate token
-	$token = $parsedBody['token'];
+	$token = validate_token($parsedBody['token']);
+
+	if(!$token) return false;
 
 	$team_id = $parsedBody['team_id'];
 

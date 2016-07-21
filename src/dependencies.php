@@ -1,7 +1,19 @@
 <?php
-// DIC configuration
 
+use Kimeria\TicTacToeService as TicTacToeService;
+
+// DIC configuration
 $container = $app->getContainer();
+
+#
+# Configure the TicTacToe Service
+#
+
+$container['TicTacToeService'] = function($c){
+	return new Kimeria\TicTacToeService;
+};
+
+
 
 // view renderer
 $container['renderer'] = function ($c) {
